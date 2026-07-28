@@ -30,9 +30,9 @@ permissions:
 
 # ── All tags in one place ────────────────────────────────────────────────
 env:
-  FEDORA_TAG: '2026-07-28.2'
+  FEDORA_TAG: '2026-07-28.3'
   UBUNTU_TAG: '2026-07-28.1'
-  DEBIAN_TAG: '2026-07-28.2'
+  DEBIAN_TAG: '2026-07-28.3'
   ALPINE_TAG: '2026-07-28.0'
 
 jobs:
