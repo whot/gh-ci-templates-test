@@ -24,7 +24,7 @@ jobs:
         uses: whot/gh-ci-templates/.github/actions/container-prep@main
         with:
           base-image: 'fedora:44'
-          tag: '2026-07-28.0'
+          tag: '2026-07-28.2'
           packages: 'gcc meson ninja-build'
 
   ubuntu:
@@ -50,7 +50,7 @@ jobs:
         uses: whot/gh-ci-templates/.github/actions/container-prep@main
         with:
           base-image: 'debian:bookworm'
-          tag: '2026-07-28.1'
+          tag: '2026-07-28.2'
           packages: 'gcc libc6-dev meson ninja-build pkg-config'
 
   alpine:
