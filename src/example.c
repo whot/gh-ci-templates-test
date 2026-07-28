@@ -1,3 +1,5 @@
+/* some comment to trigger a commit */
+
 #include "example.h"
 
 int example_add(int a, int b)
