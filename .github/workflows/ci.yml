@@ -5,86 +5,29 @@ on:
     branches: [main]
   pull_request:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-  #
-  # Container preparation — one job per distro.
-  # Images are cached in ghcr.io; bump the tag when deps change.
-  #
-  fedora:
-    runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.prep.outputs.image }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: prep
-        uses: whot/gh-ci-templates/.github/actions/container-prep@main
-        with:
-          base-image: 'fedora:44'
-          tag: '2026-07-28.0'
-          packages: 'gcc meson ninja-build'
+  containers:
+    uses: ./.github/workflows/containers.yml
+    permissions:
+      contents: read
+      packages: write
 
-  ubuntu:
-    runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.prep.outputs.image }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: prep
-        uses: whot/gh-ci-templates/.github/actions/container-prep@main
-        with:
-          base-image: 'ubuntu:24.04'
-          tag: '2026-07-28.1'
-          packages: 'gcc libc6-dev meson ninja-build pkg-config'
-
-  debian:
-    runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.prep.outputs.image }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: prep
-        uses: whot/gh-ci-templates/.github/actions/container-prep@main
-        with:
-          base-image: 'debian:bookworm'
-          tag: '2026-07-28.1'
-          packages: 'gcc libc6-dev meson ninja-build pkg-config'
-
-  alpine:
-    runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.prep.outputs.image }}
-    steps:
-      - uses: actions/checkout@v7
-      - id: prep
-        uses: whot/gh-ci-templates/.github/actions/container-prep@main
-        with:
-          base-image: 'alpine:3.20'
-          tag: '2026-07-28.0'
-          packages: 'gcc musl-dev meson'
-
-  #
-  # Build & test — runs inside the prepared container.
-  #
   build:
-    needs: [fedora, ubuntu, debian, alpine]
+    needs: containers
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: fedora-44
-            image: fedora
+            image: fedora-image
           - name: ubuntu-24.04
-            image: ubuntu
+            image: ubuntu-image
           - name: debian-bookworm
-            image: debian
+            image: debian-image
           - name: alpine-3.20
-            image: alpine
-    container: ${{ needs[matrix.image].outputs.image }}
+            image: alpine-image
+    container: ${{ needs.containers.outputs[matrix.image] }}
     steps:
       - uses: actions/checkout@v7
       - name: Build
@@ -92,5 +35,4 @@ jobs:
           meson setup build
           ninja -C build
       - name: Test
-        run: |
-          meson test -C build
+        run: meson test -C build

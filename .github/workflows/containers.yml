@@ -1,0 +1,89 @@
+# Container image builds for CI.
+# Tags are defined here as env vars — bump a tag when its deps change.
+#
+# This workflow triggers on push when this file changes (so fork
+# contributors can build images in their fork's registry) and is
+# also callable from ci.yml via workflow_call.
+
+name: Containers
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - '.github/workflows/containers.yml'
+
+  workflow_call:
+    outputs:
+      fedora-image:
+        value: ${{ jobs.fedora.outputs.image }}
+      ubuntu-image:
+        value: ${{ jobs.ubuntu.outputs.image }}
+      debian-image:
+        value: ${{ jobs.debian.outputs.image }}
+      alpine-image:
+        value: ${{ jobs.alpine.outputs.image }}
+
+permissions:
+  contents: read
+  packages: write
+
+# ── All tags in one place ────────────────────────────────────────────────
+env:
+  FEDORA_TAG: '2026-07-28.2'
+  UBUNTU_TAG: '2026-07-28.1'
+  DEBIAN_TAG: '2026-07-28.2'
+  ALPINE_TAG: '2026-07-28.0'
+
+jobs:
+  fedora:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.prep.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: prep
+        uses: whot/gh-ci-templates/.github/actions/container-prep@main
+        with:
+          base-image: 'fedora:44'
+          tag: ${{ env.FEDORA_TAG }}
+          packages: 'gcc meson ninja-build'
+
+  ubuntu:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.prep.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: prep
+        uses: whot/gh-ci-templates/.github/actions/container-prep@main
+        with:
+          base-image: 'ubuntu:24.04'
+          tag: ${{ env.UBUNTU_TAG }}
+          packages: 'gcc libc6-dev meson ninja-build pkg-config'
+
+  debian:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.prep.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: prep
+        uses: whot/gh-ci-templates/.github/actions/container-prep@main
+        with:
+          base-image: 'debian:bookworm'
+          tag: ${{ env.DEBIAN_TAG }}
+          packages: 'gcc libc6-dev meson ninja-build pkg-config'
+
+  alpine:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.prep.outputs.image }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: prep
+        uses: whot/gh-ci-templates/.github/actions/container-prep@main
+        with:
+          base-image: 'alpine:3.20'
+          tag: ${{ env.ALPINE_TAG }}
+          packages: 'gcc musl-dev meson'
