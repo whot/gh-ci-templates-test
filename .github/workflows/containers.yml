@@ -30,10 +30,10 @@ permissions:
 
 # ── All tags in one place ────────────────────────────────────────────────
 env:
-  FEDORA_TAG: '2026-07-28.3'
-  UBUNTU_TAG: '2026-07-28.1'
-  DEBIAN_TAG: '2026-07-28.3'
-  ALPINE_TAG: '2026-07-28.0'
+  FEDORA_TAG: '2026-07-29.0'
+  UBUNTU_TAG: '2026-07-29.0'
+  DEBIAN_TAG: '2026-07-29.0'
+  ALPINE_TAG: '2026-07-29.0'
 
 jobs:
   fedora:
